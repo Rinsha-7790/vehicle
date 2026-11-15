@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown, ArrowRight, ArrowUpRight, Check, ChevronRight, Clock3, Camera, MapPin, Menu, Phone, ShieldCheck, Sparkles, X } from 'lucide-react'
 
@@ -26,11 +26,19 @@ const fadeUp = { hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0 } }
 
 export function InsuranceSite() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const [selectedMoment, setSelectedMoment] = useState<number | null>(null)
+
+  useEffect(() => {
+    const updateScrollState = () => setIsScrolled(window.scrollY > 24)
+    updateScrollState()
+    window.addEventListener('scroll', updateScrollState, { passive: true })
+    return () => window.removeEventListener('scroll', updateScrollState)
+  }, [])
   const links = [['Home', '#home'], ['About', '#about'], ['Services', '#services'], ['Branches', '#branches'], ['Moments', '#moments']]
   return (
     <main>
-      <header className="nav-wrap">
+      <header className={`nav-wrap ${isScrolled ? 'nav-scrolled' : ''}`}>
         <a className="brand" href="#home" aria-label="Waymark home"><span className="brand-icon"><ShieldCheck size={22} strokeWidth={2.4} /></span><span>waymark<span className="brand-dot">.</span><small>VEHICLE INSURANCE</small></span></a>
         <nav className={`nav-links ${menuOpen ? 'nav-open' : ''}`} aria-label="Main navigation">{links.map(([label, href]) => <a key={href} href={href} onClick={() => setMenuOpen(false)}>{label}</a>)}<a className="mobile-cta" href="#contact" onClick={() => setMenuOpen(false)}>Let&apos;s talk <ArrowUpRight size={15} /></a></nav>
         <a className="nav-cta" href="#contact">Let&apos;s talk <ArrowUpRight size={15} /></a>
